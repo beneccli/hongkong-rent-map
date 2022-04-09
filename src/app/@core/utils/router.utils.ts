@@ -27,6 +27,7 @@ export const ROUTER_UTILS = {
     user: {
       root: 'users',
       overview: 'overview',
+      map: 'map',
       profile: ':username',
     },
     errorResponse: {

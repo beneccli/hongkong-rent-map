@@ -13,7 +13,7 @@ __export(exports, {
 var handler = async (event, context) => {
   return {
     statusCode: 200,
-    body: JSON.stringify({ message: "Hello World", env: process.env })
+    body: JSON.stringify({ message: "Hello World \u{1F60E}", env: process.env })
   };
 };
 // Annotate the CommonJS export names for ESM import in node:
