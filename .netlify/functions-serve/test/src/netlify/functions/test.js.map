@@ -1,7 +1,7 @@
 {
   "version": 3,
   "sources": ["../../../../../../Users/benoit/Workspace/hongkong-rent-map/netlify/functions/test.ts"],
-  "sourceRoot": "/var/folders/34/y792mrld5xqg58lg7gm8wf0m0000gn/T/tmp-15188-OkI01CC3LBnr",
+  "sourceRoot": "/var/folders/34/y792mrld5xqg58lg7gm8wf0m0000gn/T/tmp-22040-srXk0XkW51rR",
   "sourcesContent": ["import { Handler } from \"@netlify/functions\";\n\nconst handler: Handler = async (event, context) => {\n  return {\n    statusCode: 200,\n    body: JSON.stringify({ message: \"Hello World \uD83D\uDE0E\", env: process.env }),\n  };\n};\n\nexport { handler };\n"],
   "mappings": ";;;;;;;;;AAAA;AAAA;AAAA;AAEA,IAAM,UAAmB,OAAO,OAAO,YAAY;AACjD,SAAO;AAAA,IACL,YAAY;AAAA,IACZ,MAAM,KAAK,UAAU,EAAE,SAAS,yBAAkB,KAAK,QAAQ;AAAA;AAAA;",
   "names": []

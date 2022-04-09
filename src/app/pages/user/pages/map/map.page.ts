@@ -6,12 +6,17 @@ import { environment } from '@env/environment';
   templateUrl: './map.page.html',
 })
 export class MapPage {
+  public stateMessage = '';
+
   constructor(private http: HttpClient) {
+  }
+
+  public refreshRentList() {
+    this.stateMessage = 'Refreshing rent list...';
     this.http
-      .get(environment.apiUrl + '/get-rent-list')
+      .get(environment.apiUrl + '/refresh-rent-list')
       .subscribe((response) => {
-        console.log('response');
-        console.log(response);
+        this.stateMessage = 'Rent list has been refreshed!';
       });
   }
 }
