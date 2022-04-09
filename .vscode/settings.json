@@ -11,5 +11,6 @@
   "[json]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
-  "css.validate": false
+  "css.validate": false,
+  "docwriter.hotkey.mac": "⌥ + ."
 }
