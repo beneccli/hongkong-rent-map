@@ -70,7 +70,7 @@
               "browserTarget": "test:build:production"
             },
             "development": {
-              "browserTarget": "angular-boilerplate:build:development"
+              "browserTarget": "hongkong-rent-map:build:development"
             }
           },
           "defaultConfiguration": "development"
