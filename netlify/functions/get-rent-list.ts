@@ -7,12 +7,9 @@ const handler: Handler = async (event, context) => {
   const response = await fetch(url);
   const data = await response.json() as any;
 
-  console.log('=======');
-  console.log(data);
-
   return {
     statusCode: 200,
-    body: data,
+    body: JSON.stringify(data),
   };
 };
 
