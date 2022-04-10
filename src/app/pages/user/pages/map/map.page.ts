@@ -28,4 +28,15 @@ export class MapPage {
         this.stateMessage = `Addresses have been updated for ${updatedRecords.length} records.`;
       });
   }
+
+  public retrieveRecords() {
+    this.stateMessage = 'Retrieving records...';
+    this.http
+      .get<any[]>(environment.apiUrl + '/get-rent-list')
+      .subscribe((records) => {
+        console.log('records:');
+        console.log(records);
+        this.stateMessage = `${records.length} records have been retrieved.`;
+      });
+  }
 }

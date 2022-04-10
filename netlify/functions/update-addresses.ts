@@ -73,7 +73,7 @@ const start = async () => {
       fetchNextPage();
     }, function done(err: any) {
       // updateRecords(base, recordsToUpdate);
-      if (err) { console.error(err); return; }
+      if (err) { reject(err); }
       resolve(updatedRecords);
     });
   });
