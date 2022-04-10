@@ -1,7 +1,21 @@
 <div class="py-6">
-    <button class="px-3 py-2 bg-teal-400 text-white" (click)="refreshRentList()">
-    Refresh rent list
-  </button>
+  <div class="flex">
+    <button
+      class="px-3 py-2 mr-3 text-white duration-150 bg-teal-400 rounded-lg shadow-lg active:bg-teal-500 hover:scale-105"
+      (click)="refreshRentList()"
+    >
+      Refresh rent list
+    </button>
+    <button
+      class="px-3 py-2 mr-3 text-white duration-150 bg-teal-400 rounded-lg shadow-lg active:bg-teal-500 hover:scale-105"
+      (click)="updateAddresses()"
+    >
+      Update addresses
+    </button>
+  </div>
 
-    <p>State: {{stateMessage}}</p>
+  <div class="px-4 py-2 mt-12 bg-gray-200">
+    <div class="font-bold">State</div>
+    <div>{{stateMessage}}</div>
+  </div>
 </div>

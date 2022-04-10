@@ -19,4 +19,13 @@ export class MapPage {
         this.stateMessage = 'Rent list has been refreshed!';
       });
   }
+
+  public updateAddresses() {
+    this.stateMessage = 'Updating addresses...';
+    this.http
+      .get<any[]>(environment.apiUrl + '/update-addresses')
+      .subscribe((updatedRecords) => {
+        this.stateMessage = `Addresses have been updated for ${updatedRecords.length} records.`;
+      });
+  }
 }
