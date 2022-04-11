@@ -19,9 +19,9 @@ const getRecords = async (): Promise<any[]> => {
 }
 
 const recordToObject = (record: any) => {
-  const keysToParse = ['area', 'descriptions', 'districtAreas', 'labels', 'picture'];
+  const keysToParse = ['area', 'descriptions', 'districtAreas', 'labels', 'picture', 'coordinates'];
   keysToParse.map((key) => {
-    record.fields[key] = JSON.parse(record.fields[key])
+    record.fields[key] = record.fields[key] && JSON.parse(record.fields[key]) || '';
   });
 
   return record.fields;

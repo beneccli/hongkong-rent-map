@@ -14,6 +14,12 @@
     </button>
     <button
       class="px-3 py-2 mr-3 text-white duration-150 bg-teal-400 rounded-lg shadow-lg active:bg-teal-500 hover:scale-105"
+      (click)="updateCoordinates()"
+    >
+      Update coordinates
+    </button>
+    <button
+      class="px-3 py-2 mr-3 text-white duration-150 bg-teal-400 rounded-lg shadow-lg active:bg-teal-500 hover:scale-105"
       (click)="retrieveRecords()"
     >
       Retrieve records
@@ -23,5 +29,16 @@
   <div class="px-4 py-2 mt-12 bg-gray-200">
     <div class="font-bold">State</div>
     <div>{{stateMessage}}</div>
+  </div>
+
+  <!-- <google-map></google-map> -->
+  <div style="height: 700px;"
+    leaflet
+    [leafletOptions]="options"
+    (leafletMapReady)="onMapReady($event)"
+  >
+    <ng-container *ngFor="let marker of markers">
+      <div [leafletLayer]="marker"></div>
+    </ng-container>
   </div>
 </div>

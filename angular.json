@@ -26,8 +26,20 @@
             "polyfills": "src/polyfills.ts",
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "css",
-            "assets": ["src/favicon.ico", "src/assets", "src/_redirects"],
-            "styles": ["src/theme/styles.css"],
+            "assets": [
+              "src/favicon.ico",
+              "src/assets",
+              "src/_redirects",
+              {
+                "glob": "**/*",
+                "input": "./node_modules/leaflet/dist/images",
+                "output": "assets/"
+              }
+            ],
+            "styles": [
+              "src/theme/styles.css",
+              "./node_modules/leaflet/dist/leaflet.css"
+            ],
             "scripts": []
           },
           "configurations": {
@@ -83,7 +95,10 @@
             "tsConfig": "tsconfig.spec.json",
             "karmaConfig": "karma.conf.js",
             "assets": ["src/favicon.ico", "src/assets"],
-            "styles": ["src/theme/styles.css"],
+            "styles": [
+              "src/theme/styles.css",
+              "./node_modules/leaflet/dist/leaflet.css"
+            ],
             "scripts": []
           }
         },
