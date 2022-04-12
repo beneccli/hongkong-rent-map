@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { GoogleMapsModule } from '@angular/google-maps';
 import { LeafletModule } from '@asymmetrik/ngx-leaflet';
 import { MapPage } from './pages/map/map.page';
@@ -9,6 +10,6 @@ import { UserRoutingModule } from './user-routing.module';
 
 @NgModule({
   declarations: [MyProfilePage, OverviewPage, MapPage],
-  imports: [CommonModule, UserRoutingModule, GoogleMapsModule, LeafletModule],
+  imports: [CommonModule, UserRoutingModule, GoogleMapsModule, LeafletModule, FormsModule],
 })
 export class UserModule {}

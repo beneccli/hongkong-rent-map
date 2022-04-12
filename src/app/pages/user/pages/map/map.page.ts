@@ -11,6 +11,7 @@ export class MapPage {
   public stateMessage = '';
   public records = new BehaviorSubject<any>([]);
   public markers = [];
+  public location$ = new BehaviorSubject<string>('hk');
   public options = {
     layers: [
       L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18, attribution: '...' })
@@ -20,7 +21,6 @@ export class MapPage {
   };
 
   constructor(private http: HttpClient) {
-    this.retrieveRecords();
     this.records
       .subscribe((records) => {
         this.markers = records
@@ -28,14 +28,16 @@ export class MapPage {
           .map((record: any) => {
             return L
               .marker([record.coordinates.lat, record.coordinates.lon], { icon: this.generateIcon(record.price) })
-              .on('mousedown', () => window?.open('https://youtube.com', '_blank')?.focus());
+              .on('mousedown', () => window?.open(record.detailUrl, '_blank')?.focus());
           })
       });
+    this.location$.subscribe((location) => this.retrieveRecords(location));
   }
 
   private generateIcon(text: string): L.Icon {
+    const transformedPrice = (parseInt(text)/1000).toString().substring(0,4) + 'K';
     return L.icon({
-      iconUrl: `https://api.geoapify.com/v1/icon/?type=circle&color=red&size=x-large&icon=cloud&iconType=awesome&text=${text}&textSize=small&noWhiteCircle&apiKey=0d16f52d3089433ea9ae026b69c79114`,
+      iconUrl: `https://api.geoapify.com/v1/icon/?type=circle&color=red&size=x-large&icon=cloud&iconType=awesome&text=${transformedPrice}&textSize=small&noWhiteCircle&apiKey=0d16f52d3089433ea9ae026b69c79114`,
       // iconUrl: `https://api.geoapify.com/v1/icon?size=xx-large&type=awesome&color=%233e9cfe&icon=paw&apiKey=0d16f52d3089433ea9ae026b69c79114`,
       iconSize: [40, 30], // size of the icon
       iconAnchor: [15.5, 42], // point of the icon which will correspond to marker's location
@@ -54,28 +56,28 @@ export class MapPage {
 
   }
 
-  public refreshRentList() {
+  public refreshRentList(location?: string) {
     this.stateMessage = 'Refreshing rent list...';
     this.http
-      .get(environment.apiUrl + '/refresh-rent-list')
+      .get(environment.apiUrl + '/refresh-rent-list?location=' + (location || this.location$.getValue()))
       .subscribe((response) => {
         this.stateMessage = 'Rent list has been refreshed!';
       });
   }
 
-  public updateAddresses() {
+  public updateAddresses(location?: string) {
     this.stateMessage = 'Updating addresses...';
     this.http
-      .get<any[]>(environment.apiUrl + '/update-addresses')
+      .get<any[]>(environment.apiUrl + '/update-addresses?location=' + (location || this.location$.getValue()))
       .subscribe((updatedRecords) => {
         this.stateMessage = `Addresses have been updated for ${updatedRecords.length} records.`;
       });
   }
 
-  public retrieveRecords() {
+  public retrieveRecords(location?: string) {
     this.stateMessage = 'Retrieving records...';
     this.http
-      .get<any[]>(environment.apiUrl + '/get-rent-list')
+      .get<any[]>(environment.apiUrl + '/get-rent-list?location=' + (location || this.location$.getValue()))
       .pipe(catchError((err) => of(err.message)))
       .subscribe((result) => {
         if (Array.isArray(result)) {
@@ -87,10 +89,10 @@ export class MapPage {
       });
   }
 
-  public updateCoordinates() {
+  public updateCoordinates(location?: string) {
     this.stateMessage = 'Updating records\' coordinates...';
     this.http
-      .get<any[]>(environment.apiUrl + '/update-coordinates')
+      .get<any[]>(environment.apiUrl + '/update-coordinates?location=' + (location || this.location$.getValue()))
       .pipe(catchError((err) => of(err.error.message)))
       .subscribe((result) => {
         if (Array.isArray(result)) {
@@ -99,5 +101,9 @@ export class MapPage {
           this.stateMessage = result;
         }
       });
+  }
+
+  public onNewLocation(event?: any) {
+    this.location$.next(event.target.value);
   }
 }

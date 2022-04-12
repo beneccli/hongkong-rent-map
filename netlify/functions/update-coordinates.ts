@@ -2,11 +2,11 @@ import { Handler } from "@netlify/functions";
 import * as airtable from 'airtable';
 import fetch from 'node-fetch';
 
-const updateRecord = (base: any, recordId: string, coordinates: { lon: number, lat: number }) => {
+const updateRecord = (base: any, recordId: string, coordinates?: { lon: number, lat: number }) => {
   base('RentList').update([
     {
       id: recordId,
-      fields: { coordinates: JSON.stringify(coordinates) }
+      fields: { coordinates: coordinates ? JSON.stringify(coordinates) : 'KO' }
     }
   ],
   function(err: any, records: any[]) {
@@ -17,6 +17,19 @@ const updateRecord = (base: any, recordId: string, coordinates: { lon: number, l
   });
 }
 
+const cleanAddress = (address: string) => {
+  return address
+    .trim()
+    .toLowerCase()
+    .split('and')[0]
+    .replace('st.', 'street')
+    .replace(/(.+) st$/i, '$1 street')
+    .replace('no.', '')
+    .replace('no:', '')
+    .replace('nos.', '')
+    .replace('rd.', 'road');
+}
+
 const findCoord = async (base: any, record: any) => {
   const requestOptions = {
     method: 'GET',
@@ -24,7 +37,7 @@ const findCoord = async (base: any, record: any) => {
 
   // const address = 'No.38 Fuk Chak Street, Hong Kong';
   // const test = 'No.38%20Fuk%20Chak%20Street%2C%20Hong%20Kong';
-  const address = `${record.fields.address}, Hong Kong`;
+  const address = `${cleanAddress(record.fields.address)}, Hong Kong`;
   const url = `https://api.geoapify.com/v1/geocode/search?text=${address}&format=json&apiKey=0d16f52d3089433ea9ae026b69c79114`;
 
   console.log('Searching address: ' + address);
@@ -32,17 +45,18 @@ const findCoord = async (base: any, record: any) => {
   fetch(url, requestOptions)
     .then((response) => response.json())
     .then((result: any) => {
-      if (result.results?.length) {
-        console.log('Selected result: ' + JSON.stringify(result.results[0]));
+      console.log(result.results);
+      const rankedResults = result?.results?.filter((e: any) => e.rank.confidence > 0);
+      if (rankedResults?.length) {
+        console.log('Selected result: ' + JSON.stringify(rankedResults[0]));
         const coordinates = {
-          lon: result.results[0].lon,
-          lat: result.results[0].lat
+          lon: rankedResults[0].lon,
+          lat: rankedResults[0].lat
         };
 
         updateRecord(base, record.getId(), coordinates);
       } else {
-        console.log('No result');
-        console.log(result.resulsts);
+        updateRecord(base, record.getId());
       }
     })
     .catch((error) => console.log('error', error));
@@ -53,7 +67,7 @@ const error = (code: number, message: string, payload?: any) => {
   return { code, message, payload }
 }
 
-const start = async () => {
+const start = async (location: string) => {
   const apiKey = 'key7n6E71OR94Ur7a';
   airtable.configure({ apiKey });
   const base = airtable.base('appSt8paRVfriWVnj');
@@ -63,7 +77,14 @@ const start = async () => {
     let updatedRecords: any[] = [];
     base('RentList').select({
       maxRecords: 15,
-      filterByFormula: "AND({address} != '', {coordinates} = '')",
+      filterByFormula: `AND(
+        {address} != '',
+        {address} != 'KO',
+        {address} != '.',
+        {address} != '-',
+        {coordinates} = '',
+        {location} = '${location}'
+      )`,
     }).eachPage((records: any[], fetchNextPage: () => void) => {
 
       if (!records.length && !updatedRecords.length) {
@@ -89,9 +110,11 @@ const start = async () => {
 }
 
 const handler: Handler = async (event, context) => {
+  const location: string = event?.queryStringParameters?.['location'] || 'hk';
   let updatedRecords;
+
   try {
-    updatedRecords = await start();
+    updatedRecords = await start(location);
   } catch (err: any) {
     return {
       statusCode: 500,
