@@ -1,14 +1,22 @@
 import { Handler } from "@netlify/functions";
 import * as airtable from 'airtable';
 
-const getRecords = async (location: string): Promise<any[]> => {
+const getRecords = async (location: string, priceLow: string, priceHigh: string): Promise<any[]> => {
   const apiKey = 'key7n6E71OR94Ur7a';
   airtable.configure({ apiKey });
   const base = airtable.base('appSt8paRVfriWVnj');
 
   return new Promise(function(resolve, reject) {
     let getRecords: any[] = [];
-    base('RentList').select({ filterByFormula: `{location} = '${location || 'hk'}'` }).eachPage((records: any[], fetchNextPage: () => void) => {
+    base('RentList').select({
+      filterByFormula:
+        `AND(
+          {location} = '${location || 'hk'}',
+          {price} > ${priceLow || '15000'},
+          {price} < ${priceHigh || '20000'}
+        )`
+    })
+    .eachPage((records: any[], fetchNextPage: () => void) => {
       getRecords = [ ...getRecords, ...records ];
       fetchNextPage();
     }, function done(err: any) {
@@ -33,7 +41,11 @@ const recordToObject = (record: any) => {
 
 const handler: Handler = async (event, context) => {
   const location: string = event?.queryStringParameters?.['location'] || 'hk';
-  const records: any[] = await getRecords(location);
+  const priceRange: string = event?.queryStringParameters?.['priceRange'] || '15000-20000';
+  const priceLow = priceRange.split('-')[0];
+  const priceHigh = priceRange.split('-')[1];
+
+  const records: any[] = await getRecords(location, priceLow, priceHigh);
   const rentList: any[] = records.map((e) => recordToObject(e));
 
   return {

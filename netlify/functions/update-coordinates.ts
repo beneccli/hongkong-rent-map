@@ -67,7 +67,7 @@ const error = (code: number, message: string, payload?: any) => {
   return { code, message, payload }
 }
 
-const start = async (location: string) => {
+const start = async (location: string, priceLow: string, priceHigh: string) => {
   const apiKey = 'key7n6E71OR94Ur7a';
   airtable.configure({ apiKey });
   const base = airtable.base('appSt8paRVfriWVnj');
@@ -83,7 +83,9 @@ const start = async (location: string) => {
         {address} != '.',
         {address} != '-',
         {coordinates} = '',
-        {location} = '${location}'
+        {location} = '${location}',
+        {price} > ${priceLow},
+        {price} <= ${priceHigh}
       )`,
     }).eachPage((records: any[], fetchNextPage: () => void) => {
 
@@ -111,10 +113,13 @@ const start = async (location: string) => {
 
 const handler: Handler = async (event, context) => {
   const location: string = event?.queryStringParameters?.['location'] || 'hk';
+  const priceRange: string = event?.queryStringParameters?.['priceRange'] || '15000-20000';
+  const priceLow = priceRange.split('-')[0];
+  const priceHigh = priceRange.split('-')[1];
   let updatedRecords;
 
   try {
-    updatedRecords = await start(location);
+    updatedRecords = await start(location, priceLow, priceHigh);
   } catch (err: any) {
     return {
       statusCode: 500,

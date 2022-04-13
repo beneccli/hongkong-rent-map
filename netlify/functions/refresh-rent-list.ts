@@ -64,7 +64,7 @@ const retrievePicture = (htmlElement: any) => {
   const resultNb = result.nextElementSibling;
   return {
     thumbnail: result.attributes.src,
-    total: parseInt(resultNb.querySelector('.ui.label').rawText.trim())
+    total: parseInt(resultNb.querySelector('.ui.label')?.rawText.trim() || 1)
   };
 }
 
@@ -85,8 +85,27 @@ const extractData = (htmlElement: any) => {
   }
 }
 
+const generatePriceRangeIndex = (rentprice_low: number, rentprice_high: number) => {
+  if (rentprice_low == 0 && rentprice_high != 0) {
+    return 1;
+  } else if (rentprice_low == 5000) {
+    return 2;
+  } else if (rentprice_low == 10000) {
+    return 3;
+  } else if (rentprice_low == 15000) {
+    return 4;
+  } else if (rentprice_low == 20000) {
+    return 5;
+  } else if (rentprice_low == 40000) {
+    return 6;
+  }
+
+  return 0;
+}
+
 const extractResult = async (location: string, currentPage: number, rentprice_low: number, rentprice_high: number): Promise<any[]> => {
-  const url = `https://www.28hse.com/en/property/dosearch?buyRent=rent&sortBy=&plan_id=0&plan_id_more_search_open=&page=${currentPage}&location=${location}&district_ids=0&district_group_ids=0&cat_ids=&house_main_type_ids=&house_other_main_type_ids=&house_other_main_type_id_fix=0&house_other_sub_main_type_ids=&price_selection_index=0&price_low=0&price_high=0&rentprice_selection_index=3&rentprice_low=${rentprice_low}&rentprice_high=${rentprice_high}&area_selection_index=0&area_build_sales=sales&area_low=0&area_high=0&noOfRoom=&estate_age_low=0&estate_age_high=0&house_search_tag_ids=&myfav=&myvisited=&property_ids=&is_return_newmenu=0&is_grid_mode=0&landlordAgency=&estate_age_index=&floors=&temp_house_search_tag_ids=&search_words_value=&search_words_thing=&search_words=&sortByBuy=&sortByRent=`;
+  const rentprice_selection_index = generatePriceRangeIndex(rentprice_low, rentprice_high);
+  const url = `https://www.28hse.com/en/property/dosearch?buyRent=rent&sortBy=&plan_id=0&plan_id_more_search_open=&page=${currentPage}&location=${location}&district_ids=0&district_group_ids=0&cat_ids=&house_main_type_ids=&house_other_main_type_ids=&house_other_main_type_id_fix=0&house_other_sub_main_type_ids=&price_selection_index=0&price_low=${rentprice_low}&price_high=${rentprice_high}&rentprice_selection_index=${rentprice_selection_index}&rentprice_low=${rentprice_low}&rentprice_high=${rentprice_high}&area_selection_index=0&area_build_sales=sales&area_low=0&area_high=0&noOfRoom=&estate_age_low=0&estate_age_high=0&house_search_tag_ids=&myfav=&myvisited=&property_ids=&is_return_newmenu=0&is_grid_mode=0&landlordAgency=&estate_age_index=&floors=&temp_house_search_tag_ids=&search_words_value=&search_words_thing=&search_words=&sortByBuy=&sortByRent=`;
   const response = await fetch(url);
   const data = await response.json() as RentListResult;
 
@@ -139,11 +158,15 @@ const createRecords = (base: any, location: string, elements: any) => {
         }
       });
     }
+  } else {
+    console.log('No new record to create.');
   }
 }
 
 const updateRecords = (base: any, recordIds: any[], elements: any[]) => {
   if (elements.length) {
+    console.log(`Updating ${elements.length} records.`);
+    // console.log(elements);
     const nbPages = Math.ceil(elements.length / 10);
 
     for (let i = 0 ; i < nbPages ; i++) {
@@ -170,6 +193,8 @@ const updateRecords = (base: any, recordIds: any[], elements: any[]) => {
         }
       });
     }
+  } else {
+    console.log('No record to update.');
   }
 }
 
@@ -215,8 +240,9 @@ const handler: Handler = async (event, context) => {
 
   const location: string = event?.queryStringParameters?.['location'] || 'hk';
   const maxPage = 5;
-  const rentprice_low = 10000;
-  const rentprice_high = 15000;
+  const priceRange: string = event?.queryStringParameters?.['priceRange'] || '15000-20000';
+  const rentprice_low = priceRange.split('-')[0] || 15000;
+  const rentprice_high = priceRange.split('-')[1] || 20000;
   const extractedResult: any[] =
     await extractRentList({ location, maxPage, rentprice_low, rentprice_high});
   upsertRentList(location, extractedResult);

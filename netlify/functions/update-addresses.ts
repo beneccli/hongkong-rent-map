@@ -37,7 +37,7 @@ const updateRecord = (base: any, recordId: string, address: string) => {
   });
 }
 
-const start = async (location: string) => {
+const start = async (location: string, priceLow: string, priceHigh: string) => {
   const apiKey = 'key7n6E71OR94Ur7a';
   airtable.configure({ apiKey });
   const base = airtable.base('appSt8paRVfriWVnj');
@@ -46,7 +46,7 @@ const start = async (location: string) => {
     let updatedRecords: any[] = [];
     base('RentList').select({
       maxRecords: 12,
-      filterByFormula: `AND({address} = '', {location} = '${location}')`,
+      filterByFormula: `AND({address} = '', {location} = '${location}', {price} > ${priceLow}, {price} <= ${priceHigh})`,
     }).eachPage(async (records: any[], fetchNextPage: () => void) => {
       updatedRecords = [ ...updatedRecords, ...records ];
       const max = 3;
@@ -68,7 +68,10 @@ const start = async (location: string) => {
 const handler: Handler = async (event, context) => {
 
   const location: string = event?.queryStringParameters?.['location'] || 'hk';
-  const updatedRecords = await start(location);
+  const priceRange: string = event?.queryStringParameters?.['priceRange'] || '15000-20000';
+  const priceLow = priceRange.split('-')[0];
+  const priceHigh = priceRange.split('-')[1];
+  const updatedRecords = await start(location, priceLow, priceHigh);
 
   return {
     statusCode: 200,
