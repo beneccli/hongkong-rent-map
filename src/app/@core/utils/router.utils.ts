@@ -28,6 +28,7 @@ export const ROUTER_UTILS = {
       root: 'users',
       overview: 'overview',
       map: 'map',
+      mapNew: 'map-new',
       profile: ':username',
     },
     errorResponse: {

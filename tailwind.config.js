@@ -1,7 +1,7 @@
 module.exports = {
     mode: 'jit',
     content: ['./src/**/*.{html,ts}', './projects/**/*.{html,ts}'],
-    darkMode: 'class',
+    darkMode: 'media',
     theme: {
         fontFamily: {
             display: ['Oswald', 'sans-serif'],

@@ -30,7 +30,7 @@ const cleanAddress = (address: string) => {
     .replace('rd.', 'road');
 }
 
-const findCoord = async (base: any, record: any) => {
+const findCoordGeoapify = async (base: any, record: any) => {
   const requestOptions = {
     method: 'GET',
   };
@@ -52,6 +52,40 @@ const findCoord = async (base: any, record: any) => {
         const coordinates = {
           lon: rankedResults[0].lon,
           lat: rankedResults[0].lat
+        };
+
+        updateRecord(base, record.getId(), coordinates);
+      } else {
+        updateRecord(base, record.getId());
+      }
+    })
+    .catch((error) => console.log('error', error));
+}
+
+const findCoord = async (base: any, record: any) => {
+  const requestOptions = {
+    method: 'GET',
+  };
+  const isInteger = (num: any) => /^-?[0-9]+$/.test(num+'');
+
+  if (record.fields.address === 'KO' || isInteger(record.fields.address)) {
+    updateRecord(base, record.getId());
+  }
+
+  const address = `${cleanAddress(record.fields.address)}, Hong Kong`;
+  const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${address}&key=AIzaSyBAeLxrN6fF9XfPxuXHT-k_OX_2pI3JcYk`;
+
+  console.log('Searching address: ' + address);
+
+  fetch(url, requestOptions)
+    .then((response) => response.json())
+    .then((result: any) => {
+      const rankedResults = result?.results;
+      if (rankedResults?.length) {
+        console.log('Selected result: ' + JSON.stringify(rankedResults[0]));
+        const coordinates = {
+          lon: rankedResults[0].geometry.location.lng,
+          lat: rankedResults[0].geometry.location.lat
         };
 
         updateRecord(base, record.getId(), coordinates);
@@ -84,7 +118,7 @@ const start = async (location: string, priceLow: string, priceHigh: string) => {
         {address} != '-',
         {coordinates} = '',
         {location} = '${location}',
-        {price} > ${priceLow},
+        {price} >= ${priceLow},
         {price} <= ${priceHigh}
       )`,
     }).eachPage((records: any[], fetchNextPage: () => void) => {
