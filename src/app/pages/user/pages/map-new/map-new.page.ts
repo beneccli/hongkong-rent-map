@@ -53,6 +53,7 @@ export class MapNewPage {
           })
       });
     this.location$.subscribe((location) => this.retrieveRecords(location));
+    this.priceRange$.subscribe(() => this.retrieveRecords());
   }
 
   openInfoWindow(mapMarker: MapMarker, marker: any) {
