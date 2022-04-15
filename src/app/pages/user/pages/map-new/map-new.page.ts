@@ -28,6 +28,13 @@ export class MapNewPage {
     zoom: 13,
     styles: this.mapStyle
   };
+  private icons = {
+    blue: 'https://res.cloudinary.com/dmhcgihwc/image/upload/v1649938692/samples/blue-rect_dvvzqy.png',
+    red: 'https://res.cloudinary.com/dmhcgihwc/image/upload/v1650051640/samples/red-rect_bny1ch.png',
+    orange: 'https://res.cloudinary.com/dmhcgihwc/image/upload/v1650051640/samples/orange-rect_muv5d8.png',
+    yellow: 'https://res.cloudinary.com/dmhcgihwc/image/upload/v1650051640/samples/yellow-rect_j7pc4q.png',
+    green: 'https://res.cloudinary.com/dmhcgihwc/image/upload/v1650051640/samples/green-rect_q4j5qe.png'
+  };
 
   constructor(private http: HttpClient) {
     this.records
@@ -148,6 +155,25 @@ export class MapNewPage {
       });
   }
 
+  public updateTravelTime(location?: string, priceRange?: string) {
+    this.stateMessage = 'Updating records\' work travel time...';
+    this.http
+      .get<any[]>(
+        environment.apiUrl +
+        '/update-work-travel-time' +
+        '?location=' + (location || this.location$.getValue()) +
+        '&priceRange=' + (priceRange || this.priceRange$.getValue())
+      )
+      .pipe(catchError((err) => of(err.error.message)))
+      .subscribe((result) => {
+        if (Array.isArray(result)) {
+          this.stateMessage = `${result.length} records have seen their travel time being updated.`;
+        } else {
+          this.stateMessage = result;
+        }
+      });
+  }
+
   public onNewLocation(event?: any) {
     this.location$.next(event.target.value);
   }
@@ -160,4 +186,29 @@ export class MapNewPage {
     console.log('opening: ' + url);
     window?.open(url, '_blank')?.focus();
   }
+
+  public timeToString(time?: number) {
+    return !time ? '' : `${Math.round(time / 60)}min`;
+  }
+
+  public findMarkerIcon(marker: any) {
+    if (marker.workTravelTime < 20*60) {
+      return this.icons.green;
+    } else if (marker.workTravelTime < 40*60) {
+      return this.icons.yellow;
+    } else if (marker.workTravelTime < 60*60) {
+      return this.icons.orange;
+    } else {
+      return this.icons.red;
+    }
+  }
+
+  public findMarkerColor(marker: any) {
+    if (marker.workTravelTime < 40*60) {
+      return 'black';
+    } else {
+      return 'white';
+    }
+  }
+
 }

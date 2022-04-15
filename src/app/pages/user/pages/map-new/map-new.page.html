@@ -20,6 +20,12 @@
     </button>
     <button
       class="px-3 py-2 mr-3 text-white duration-150 bg-teal-400 rounded-lg shadow-lg dark:bg-teal-500 active:bg-teal-500 hover:scale-105"
+      (click)="updateTravelTime()"
+    >
+      Update travel time
+    </button>
+    <button
+      class="px-3 py-2 mr-3 text-white duration-150 bg-teal-400 rounded-lg shadow-lg dark:bg-teal-500 active:bg-teal-500 hover:scale-105"
       (click)="retrieveRecords()"
     >
       Retrieve records
@@ -57,11 +63,11 @@
       [options]="{
         label: {
           text: transformPrice(marker.price),
-          color: 'white',
+          color: findMarkerColor(marker),
           className: 'shadow-sm'
         },
         icon: {
-          url: 'https://res.cloudinary.com/dmhcgihwc/image/upload/v1649938692/samples/blue-rect_dvvzqy.png'
+          url: findMarkerIcon(marker)
         }
       }"
       (mapClick)="openInfoWindow(mapMarker, marker)"
@@ -71,6 +77,7 @@
       <map-info-window>
         <div *ngIf="currentMarker" class="flex flex-col items-center">
           <img [src]="currentMarker.picture.thumbnail" class="object-cover w-48 h-32" />
+          <div class="text-lg dark:text-gray-800"><b>{{timeToString(currentMarker.workTravelTime)}}</b> from work</div>
           <a
             [href]="currentMarker.detailUrl"
             target="_blank"
