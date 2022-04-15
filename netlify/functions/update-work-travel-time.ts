@@ -36,7 +36,8 @@ const generateTravelTime = async (base: any, record: any) => {
   };
 
   const origins = `${cleanAddress(record.fields.address)}, Hong Kong`;
-  const departureTime = 1649997000;
+  const today = new Date();
+  const departureTime = Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate() + 1, 8, 0, 0);
   const destination = encodeURIComponent('Three Pacific Place, Wan Chai, Hong Kong');
   const mode = 'transit';
   const transitMode = 'train|tram|subway';
