@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: 'http://www.hongkong-rent-map.tk/.netlify/functions',
+  apiUrl: 'https://www.hongkong-rent-map.tk/.netlify/functions',
 };
