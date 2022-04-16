@@ -11,7 +11,17 @@ module.exports = {
             center: true,
             padding: '1.5rem',
         },
-        extend: {},
+        extend: {
+          colors: {
+            red: {
+              pomodoro: 'rgb(217, 85, 80)',
+            }
+          }
+        },
     },
-    plugins: [],
+    plugins: [
+      require('@tailwindcss/forms')({
+        strategy: 'class',
+      }),
+    ],
 };

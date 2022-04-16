@@ -1,0 +1,63 @@
+
+<div class="flex items-center py-3 justify-evenly">
+  <div class="font-bold">Transit time from work</div>
+  <div class="flex justify-center">
+    <div class="w-6 h-6 mr-3 bg-green-500 border border-white rounded"></div>
+    <div>&lt; 20min</div>
+  </div>
+  <div class="flex justify-center">
+    <div class="w-6 h-6 mr-3 bg-yellow-500 border border-white rounded"></div>
+    <div>&lt; 40min</div>
+  </div>
+  <div class="flex justify-center">
+    <div class="w-6 h-6 mr-3 bg-orange-400 border border-white rounded"></div>
+    <div>&lt; 60min</div>
+  </div>
+  <div class="flex justify-center">
+    <div class="w-6 h-6 mr-3 bg-red-600 border border-white rounded"></div>
+    <div>&gt; 60min</div>
+  </div>
+</div>
+
+<google-map [options]="options" width="100%" height="700px" class="text-gray-800">
+  <map-marker
+    [position]="{ lat: 22.276899, lng: 114.16795195527641 }"
+    [options]="{ label: 'SG' }"
+  >
+  </map-marker>
+
+  <map-marker
+    #mapMarker="mapMarker"
+    *ngFor="let marker of markers"
+    [position]="marker.position"
+    [options]="{
+      label: {
+        text: transformPrice(marker.price),
+        color: findMarkerColor(marker),
+        className: 'shadow-sm'
+      },
+      icon: {
+        url: findMarkerIcon(marker)
+      }
+    }"
+    (mapClick)="openInfoWindow(mapMarker, marker)"
+  >
+  </map-marker>
+    <!-- <map-info-window>{{currentPrice}}</map-info-window> -->
+    <map-info-window>
+      <div *ngIf="currentMarker" class="flex flex-col items-center">
+        <img [src]="currentMarker.picture.thumbnail" class="object-cover w-48 h-32" />
+        <div class="text-lg dark:text-gray-800"><b>{{timeToString(currentMarker.workTravelTime)}}</b> from work</div>
+        <a
+          [href]="currentMarker.detailUrl"
+          target="_blank"
+          class="text-lg dark:text-gray-800"
+        >
+          See more
+        </a>
+      </div>
+    </map-info-window>
+  <map-info-window>
+
+  </map-info-window>
+</google-map>

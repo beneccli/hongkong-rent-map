@@ -1,13 +1,10 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { GoogleMapsModule } from '@angular/google-maps';
 import { RouterModule } from '@angular/router';
-import { MapComponent } from '@components/map/map.component';
 import { HomePage } from './home.page';
 
 @NgModule({
-  declarations: [HomePage, MapComponent],
+  declarations: [HomePage],
   imports: [
     CommonModule,
     RouterModule.forChild([
@@ -22,8 +19,6 @@ import { HomePage } from './home.page';
         },
       },
     ]),
-    FormsModule,
-    GoogleMapsModule,
   ],
 })
 export class HomeModule {}
