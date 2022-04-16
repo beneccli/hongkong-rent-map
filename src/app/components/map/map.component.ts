@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { MapInfoWindow, MapMarker } from '@angular/google-maps';
 import { environment } from '@env/environment';
+import { faRulerCombined, faTrainSubway, faUpRightFromSquare } from '@fortawesome/free-solid-svg-icons';
 import { BehaviorSubject, catchError, of } from 'rxjs';
 
 @Component({
@@ -21,6 +22,10 @@ export class MapComponent {
 
   @Output() actionAdd = new EventEmitter<void>(true);
   @Output() actionRemove = new EventEmitter<void>(true);
+
+  faTrainSubway = faTrainSubway;
+  faRulerCombined = faRulerCombined;
+  faUpRightFromSquare = faUpRightFromSquare;
 
   private _priceRange = '15000-20000';
   private _location = 'hk';

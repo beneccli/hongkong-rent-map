@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { GoogleMapsModule } from '@angular/google-maps';
 import { RouterModule } from '@angular/router';
 import { MapComponent } from '@components/map/map.component';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { HomePage } from './home.page';
 
 @NgModule({
@@ -24,6 +25,7 @@ import { HomePage } from './home.page';
     ]),
     FormsModule,
     GoogleMapsModule,
+    FontAwesomeModule,
   ],
 })
 export class HomeModule {}

@@ -43,16 +43,25 @@
     (mapClick)="openInfoWindow(mapMarker, marker)"
   >
   </map-marker>
-    <!-- <map-info-window>{{currentPrice}}</map-info-window> -->
     <map-info-window>
       <div *ngIf="currentMarker" class="flex flex-col items-center">
         <img [src]="currentMarker.picture.thumbnail" class="object-cover w-48 h-32" />
-        <div class="text-lg dark:text-gray-800"><b>{{timeToString(currentMarker.workTravelTime)}}</b> from work</div>
+        <div class="flex items-center py-2 text-lg dark:text-gray-800">
+          <div class="flex items-center mr-4">
+            <fa-icon [icon]="faRulerCombined" size="sm"></fa-icon>
+            <b class="ml-3">{{currentMarker.area.saleableArea}} ft²</b>
+          </div>
+          <div class="flex items-center">
+            <fa-icon [icon]="faTrainSubway" size="sm"></fa-icon>
+            <b class="ml-3">{{timeToString(currentMarker.workTravelTime)}}</b>
+          </div>
+        </div>
         <a
           [href]="currentMarker.detailUrl"
           target="_blank"
-          class="text-lg dark:text-gray-800"
+          class="w-full py-1 text-lg text-center text-white rounded bg-red-pomodoro active:bg-red-700"
         >
+          <fa-icon [icon]="faUpRightFromSquare" size="xs" class="mr-1"></fa-icon>
           See more
         </a>
       </div>
