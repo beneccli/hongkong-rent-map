@@ -56,6 +56,9 @@
             <b class="ml-3">{{timeToString(currentMarker.workTravelTime)}}</b>
           </div>
         </div>
+        <div class="mb-3">
+          {{diffDate(currentMarker)}} days ago
+        </div>
         <a
           [href]="currentMarker.detailUrl"
           target="_blank"

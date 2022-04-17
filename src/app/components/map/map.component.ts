@@ -129,4 +129,19 @@ export class MapComponent {
     }
   }
 
+  public isNewAd(marker: any): boolean {
+    const threeDaysAgo: Date = new Date();
+    threeDaysAgo.setUTCHours(0, 0, 0, 0);
+    const threeDaysAgoTimestamp: number = threeDaysAgo.getTime() - (3*24*60*60*1000);
+    const markerDateTimestamp: number = new Date(marker.createdDate).getTime();
+    return markerDateTimestamp > threeDaysAgoTimestamp;
+  }
+
+  public diffDate(marker: any): number {
+    const todayTimestamp: number = (new Date()).getTime();
+    const markerDateTimestamp: number = new Date(marker.createdDate).getTime();
+    const diffTimestamp = todayTimestamp - markerDateTimestamp;
+    return Math.ceil(diffTimestamp/86400000);
+  }
+
 }
