@@ -5,6 +5,7 @@ import { GoogleMapsModule } from '@angular/google-maps';
 import { RouterModule } from '@angular/router';
 import { MapComponent } from '@components/map/map.component';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { TooltipModule } from 'ng2-tooltip-directive-ng13fix';
 import { HomePage } from './home.page';
 
 @NgModule({
@@ -26,6 +27,7 @@ import { HomePage } from './home.page';
     FormsModule,
     GoogleMapsModule,
     FontAwesomeModule,
+    TooltipModule,
   ],
 })
 export class HomeModule {}

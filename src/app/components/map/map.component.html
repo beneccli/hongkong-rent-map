@@ -47,11 +47,11 @@
       <div *ngIf="currentMarker" class="flex flex-col items-center">
         <img [src]="currentMarker.picture.thumbnail" class="object-cover w-48 h-32" />
         <div class="flex items-center py-2 text-lg dark:text-gray-800">
-          <div class="flex items-center mr-4">
+          <div class="flex items-center mr-4" tooltip="Saleable area" placement="top" [showDelay]="250">
             <fa-icon [icon]="faRulerCombined" size="sm"></fa-icon>
             <b class="ml-3">{{currentMarker.area.saleableArea}} ft²</b>
           </div>
-          <div class="flex items-center">
+          <div class="flex items-center" tooltip="Transit time from this place to Three Pacific Place" placement="top" [showDelay]="250">
             <fa-icon [icon]="faTrainSubway" size="sm"></fa-icon>
             <b class="ml-3">{{timeToString(currentMarker.workTravelTime)}}</b>
           </div>
