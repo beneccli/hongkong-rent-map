@@ -130,9 +130,9 @@ export class MapComponent {
   }
 
   public isNewAd(marker: any): boolean {
-    const threeDaysAgo: Date = new Date();
-    threeDaysAgo.setUTCHours(0, 0, 0, 0);
-    const threeDaysAgoTimestamp: number = threeDaysAgo.getTime() - (3*24*60*60*1000);
+    const today: Date = new Date();
+    today.setUTCHours(0, 0, 0, 0);
+    const threeDaysAgoTimestamp: number = today.getTime() - (3*24*60*60*1000);
     const markerDateTimestamp: number = new Date(marker.createdDate).getTime();
     return markerDateTimestamp > threeDaysAgoTimestamp;
   }

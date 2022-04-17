@@ -1,0 +1,68 @@
+<div class="max-w-4xl mx-auto">
+  <div class="flex py-3 border-b border-red-700">
+    <div class="flex-1 text-3xl font-bold">HONG KONG RENT MAP</div>
+    <div class="flex items-center">
+      <div class="mr-3" [class.hidden]="!isLoading">
+        <svg class="w-5 h-5 mr-3 -ml-1 text-white animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+      </div>
+      <select
+        [(ngModel)]="location"
+        class="bg-white bg-opacity-25 border-none rounded-lg focus:ring-2 focus:ring-red-200 form-select"
+      >
+        <option value="hk" selected>Hong Kong</option>
+        <option value="kw">Kowloon</option>
+        <option value="nt">New Territories</option>
+      </select>
+      <select
+        [(ngModel)]="priceRange"
+        class="ml-3 bg-white bg-opacity-25 border-none rounded-lg focus:ring-2 focus:ring-red-200 form-select"
+      >
+        <option value="5000-10000">5000-10000</option>
+        <option value="10000-15000">10000-15000</option>
+        <option value="15000-20000" selected>15000-20000</option>
+        <option value="20000-40000">20000-40000</option>
+      </select>
+    </div>
+  </div>
+  <div>
+    <h1 class="my-6 text-2xl">Monitoring</h1>
+    <div class="flex justify-between">
+      <button
+        (click)="refreshRentList()"
+        class="mr-3 bg-white bg-opacity-25 border-none rounded-lg active:bg-opacity-10 focus:ring-2 focus:ring-red-200 form-input"
+      >
+        Refresh rent list
+      </button>
+      <button
+        (click)="updateAddresses()"
+        class="mr-3 bg-white bg-opacity-25 border-none rounded-lg active:bg-opacity-10 focus:ring-2 focus:ring-red-200 form-input"
+      >
+        Update addresses
+      </button>
+      <button
+        (click)="updateCoordinates()"
+        class="mr-3 bg-white bg-opacity-25 border-none rounded-lg active:bg-opacity-10 focus:ring-2 focus:ring-red-200 form-input"
+      >
+        Update coordinates
+      </button>
+      <button
+        (click)="updateTravelTime()"
+        class="mr-3 bg-white bg-opacity-25 border-none rounded-lg active:bg-opacity-10 focus:ring-2 focus:ring-red-200 form-input"
+      >
+        Update transit time
+      </button>
+      <button
+        (click)="removeUnavailableAds()"
+        class="bg-white bg-opacity-25 border-none rounded-lg active:bg-opacity-10 focus:ring-2 focus:ring-red-200 form-input"
+      >
+        Remove unavailable ads
+      </button>
+    </div>
+    <p class="px-6 py-3 mt-6 bg-red-700 bg-opacity-25 rounded-lg">
+      {{stateMessage || 'No message available.'}}
+    </p>
+  </div>
+</div>
