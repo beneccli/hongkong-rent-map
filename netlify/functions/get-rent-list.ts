@@ -8,12 +8,12 @@ const getRecords = async (location: string, priceLow: string, priceHigh: string)
 
   return new Promise(function(resolve, reject) {
     let getRecords: any[] = [];
-    base('RentList').select({
+    base(location).select({
       filterByFormula:
         `AND(
           {location} = '${location || 'hk'}',
-          {price} > ${priceLow || '15000'},
-          {price} < ${priceHigh || '20000'}
+          {price} >= ${priceLow || '15000'},
+          {price} <= ${priceHigh || '20000'}
         )`
     })
     .eachPage((records: any[], fetchNextPage: () => void) => {

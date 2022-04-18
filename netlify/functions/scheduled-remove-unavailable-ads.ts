@@ -1,7 +1,15 @@
 import { schedule } from '@netlify/functions';
-import { handler as parentHandler } from './remove-unavailable-ads';
+import { removeUnavailableAds } from 'netlify/utils/remove-unavailable-ads';
 
 export const handler = schedule(
   "@hourly",
-  parentHandler
+  async () => {
+    await removeUnavailableAds('hk');
+    await removeUnavailableAds('kw');
+    await removeUnavailableAds('nt');
+
+    return {
+      statusCode: 200,
+    };
+  }
 );
