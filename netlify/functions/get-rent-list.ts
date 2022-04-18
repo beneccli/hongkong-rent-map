@@ -13,7 +13,11 @@ const getRecords = async (location: string, priceLow: string, priceHigh: string)
         `AND(
           {location} = '${location || 'hk'}',
           {price} >= ${priceLow || '15000'},
-          {price} <= ${priceHigh || '20000'}
+          {price} <= ${priceHigh || '20000'},
+          {address} != '',
+          {address} != 'KO',
+          {coordinates} != '',
+          {coordinates} != 'KO'
         )`
     })
     .eachPage((records: any[], fetchNextPage: () => void) => {
