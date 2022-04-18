@@ -161,7 +161,7 @@ export class MapNewPage {
     this.http
       .get<any[]>(
         environment.apiUrl +
-        '/update-work-travel-time' +
+        '/update-work-transit-time' +
         '?location=' + (location || this.location$.getValue()) +
         '&priceRange=' + (priceRange || this.priceRange$.getValue())
       )
