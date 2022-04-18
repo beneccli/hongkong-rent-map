@@ -1,6 +1,7 @@
 import * as airtable from 'airtable';
 import fetch from 'node-fetch';
 import parse from 'node-html-parser';
+import { getBaseIdByLocation } from './get-base-by-location';
 
 const extractAddress = async (record: any): Promise<string> => {
   if (!record) {
@@ -39,7 +40,7 @@ const updateRecord = (base: any, location: string, recordId: string, address: st
 const updateAddresses = async (location: string, priceLow: string, priceHigh: string) => {
   const apiKey = 'key7n6E71OR94Ur7a';
   airtable.configure({ apiKey });
-  const base = airtable.base('appSt8paRVfriWVnj');
+  const base = airtable.base(getBaseIdByLocation[location]);
 
   return new Promise(function(resolve, reject) {
     let updatedRecords: any[] = [];

@@ -1,5 +1,6 @@
 import * as airtable from 'airtable';
 import fetch from 'node-fetch';
+import { getBaseIdByLocation } from './get-base-by-location';
 
 const updateRecord = (base: any, location: string, recordId: string, travelTime?: number) => {
   base(location).update([
@@ -73,7 +74,7 @@ const error = (code: number, message: string, payload?: any) => {
 const updateWorkTransitTime = async (location: string, priceLow: string, priceHigh: string) => {
   const apiKey = 'key7n6E71OR94Ur7a';
   airtable.configure({ apiKey });
-  const base = airtable.base('appSt8paRVfriWVnj');
+  const base = airtable.base(getBaseIdByLocation[location]);
 
   return new Promise(function(resolve, reject) {
     let updatedRecords: any[] = [];

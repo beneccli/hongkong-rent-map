@@ -1,10 +1,11 @@
 import { Handler } from "@netlify/functions";
 import * as airtable from 'airtable';
+import { getBaseIdByLocation } from "netlify/utils/get-base-by-location";
 
 const getRecords = async (location: string, priceLow: string, priceHigh: string): Promise<any[]> => {
   const apiKey = 'key7n6E71OR94Ur7a';
   airtable.configure({ apiKey });
-  const base = airtable.base('appSt8paRVfriWVnj');
+  const base = airtable.base(getBaseIdByLocation[location]);
 
   return new Promise(function(resolve, reject) {
     let getRecords: any[] = [];

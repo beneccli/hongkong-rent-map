@@ -2,6 +2,7 @@ import * as airtable from 'airtable';
 import { RentListResult } from "netlify/interfaces/rent-list-result";
 import fetch from 'node-fetch';
 import parse from 'node-html-parser';
+import { getBaseIdByLocation } from './get-base-by-location';
 
 const retrievePrice = (htmlElement: any) => {
   const result = htmlElement.querySelector('.ui.right.floated.large.label');
@@ -215,7 +216,7 @@ const extractRentList = async (opt: any) => {
 const upsertRentList = (location: string, extractedRentList: any[]) => {
   const apiKey = 'key7n6E71OR94Ur7a';
   airtable.configure({ apiKey });
-  const base = airtable.base('appSt8paRVfriWVnj');
+  const base = airtable.base(getBaseIdByLocation[location]);
 
   const toUpdateIds: any[] = [];
   base(location).select({

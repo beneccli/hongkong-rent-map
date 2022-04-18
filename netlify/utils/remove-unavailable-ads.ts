@@ -1,6 +1,7 @@
 import * as airtable from 'airtable';
 import fetch from 'node-fetch';
 import parse from 'node-html-parser';
+import { getBaseIdByLocation } from './get-base-by-location';
 
 interface RecordToRemove {
   recordId: string;
@@ -43,7 +44,7 @@ const updateRecords = async (base: any, location: string, recordsToUpdate: Recor
 const removeUnavailableAds = async (location: string) => {
   const apiKey = 'key7n6E71OR94Ur7a';
   airtable.configure({ apiKey });
-  const base = airtable.base('appSt8paRVfriWVnj');
+  const base = airtable.base(getBaseIdByLocation[location]);
 
   return new Promise(function(resolve, reject) {
     let processedRecords: any[] = [];
