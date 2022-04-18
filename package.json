@@ -31,12 +31,13 @@
     "@types/leaflet": "^1.7.9",
     "axios": "^0.26.1",
     "leaflet": "^1.7.1",
+    "ng2-tooltip-directive-ng13fix": "^2.10.1",
+    "ngx-google-analytics": "^13.0.1",
     "node-fetch": "^3.2.3",
     "node-html-parser": "^5.3.3",
     "rxjs": "~7.4.0",
     "tslib": "^2.3.0",
-    "zone.js": "~0.11.4",
-    "ng2-tooltip-directive-ng13fix": "^2.10.1"
+    "zone.js": "~0.11.4"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "^13.3.3",
