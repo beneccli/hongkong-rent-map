@@ -28,6 +28,8 @@ export const handler = schedule(
     const currentStep = getSteps[currentStatus];
     updateStatus(base, schedulingStatus);
 
+    console.log('Current step: ' + JSON.stringify(currentStep));
+
     await refreshRentList(
       currentStep.location,
       currentStep.lowPrice,
