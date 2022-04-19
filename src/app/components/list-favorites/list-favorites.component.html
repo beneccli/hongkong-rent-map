@@ -1,0 +1,13 @@
+
+<div>
+  <h3 class="mt-12 mb-6 text-2xl">Favorites ads</h3>
+  <ul class="pl-5 list-disc">
+    <li
+      *ngFor="let favoriteAdId of favoriteAdsIds"
+      class="my-2 cursor-pointer hover:underline"
+      (click)="showFavorite.emit(favoriteAds[favoriteAdId])"
+    >
+      {{favoriteAds[favoriteAdId].data.name}}
+    </li>
+  </ul>
+</div>

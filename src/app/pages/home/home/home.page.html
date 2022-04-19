@@ -31,7 +31,23 @@
   <app-map
     [priceRange]="priceRange"
     [location]="location"
+    [favoriteAdsIds]="favoriteAdsIds"
+    [favoriteAds]="favoriteAds"
+    [showAd]="showAd"
     (actionAdd)="onActionAdd()"
     (actionRemove)="onActionRemove()"
+    (addFavoriteAd)="onAddFavoriteAdsId($event)"
+    (removeFavoriteAd)="onRemoveFavoriteAdsId($event)"
   ></app-map>
+
+  <app-list-favorites
+    [priceRange]="priceRange"
+    [location]="location"
+    [favoriteAdsIds]="favoriteAdsIds"
+    [favoriteAds]="favoriteAds"
+    (addFavoriteAd)="onAddFavoriteAdsId($event)"
+    (removeFavoriteAd)="onRemoveFavoriteAdsId($event)"
+    (showFavorite)="onShowFavorite($event)"
+  >
+  </app-list-favorites>
 </div>

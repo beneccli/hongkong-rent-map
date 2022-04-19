@@ -42,6 +42,7 @@
     }"
     (mapClick)="openInfoWindow(mapMarker, marker)"
   >
+    {{addMapMarker(marker, mapMarker)}}
   </map-marker>
 
   <map-info-window>
@@ -70,6 +71,13 @@
           <fa-icon [icon]="faUpRightFromSquare" size="xs" class="mr-1"></fa-icon>
           See more
         </a>
+        <button
+          (click)="toggleFavorite(currentMarker.data)"
+          class="w-full py-1 mt-2 text-lg text-center text-white rounded bg-red-pomodoro active:bg-red-700"
+        >
+          <fa-icon [icon]="isAdFavorite(currentMarker.data.id) ? faHeartCircleCheck : faHeart" class="mr-1"></fa-icon>
+          Favorite
+        </button>
       </ng-container>
 
       <ng-container *ngIf="currentMarker.type === MarkerType.Group">

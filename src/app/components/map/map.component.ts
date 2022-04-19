@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { MapInfoWindow, MapMarker } from '@angular/google-maps';
 import { environment } from '@env/environment';
-import { faHashtag, faRulerCombined, faTrainSubway, faUpRightFromSquare } from '@fortawesome/free-solid-svg-icons';
+import { faHashtag, faHeart, faHeartCircleCheck, faHeartCrack, faRulerCombined, faTrainSubway, faUpRightFromSquare } from '@fortawesome/free-solid-svg-icons';
 import { BehaviorSubject, catchError, of } from 'rxjs';
 
 enum MarkerType {
@@ -30,14 +30,39 @@ export class MapComponent {
     this._location = value;
     this.retrieveRecords();
   }
+  @Input() set showAd(record: any) {
+    if (record) {
+      setTimeout(() => {
+        const marker = this.markers.find((marker) => {
+          if (marker.type === MarkerType.Ad) {
+            return marker.data.id === record.id;
+          } else {
+            return !!marker.data.find((ad: any) => ad.id === record.id);
+          }
+        });
+
+        if (marker) {
+          this.currentMarker = marker;
+          this.infoWindow?.open(this.mapMarkers[record.id]);
+        }
+      }, 1000);
+    }
+  }
+  @Input() favoriteAdsIds: string[] = [];
+  @Input() favoriteAds: Record<string, any> = {};
 
   @Output() actionAdd = new EventEmitter<void>(true);
   @Output() actionRemove = new EventEmitter<void>(true);
+  @Output() addFavoriteAd = new EventEmitter<any>(true);
+  @Output() removeFavoriteAd = new EventEmitter<any>(true);
 
   faTrainSubway = faTrainSubway;
   faRulerCombined = faRulerCombined;
   faUpRightFromSquare = faUpRightFromSquare;
   faHashtag = faHashtag;
+  faHeart = faHeart;
+  faHeartCrack = faHeartCrack;
+  faHeartCircleCheck = faHeartCircleCheck;
   MarkerType = MarkerType;
 
   private _priceRange = '15000-20000';
@@ -49,6 +74,8 @@ export class MapComponent {
   public markerPositions: google.maps.LatLngLiteral[] = [];
   public markers: IMarker[] = [];
   public currentMarker: any;
+  // private favoriteAdsIds: string[] = [];
+  // private favoriteAds: Record<string, any> = {};
   private mapStyle: any = window?.matchMedia('(prefers-color-scheme: dark)').matches ? [{"featureType":"all","elementType":"labels.text.fill","stylers":[{"saturation":36},{"color":"#000000"},{"lightness":40}]},{"featureType":"all","elementType":"labels.text.stroke","stylers":[{"visibility":"on"},{"color":"#000000"},{"lightness":16}]},{"featureType":"all","elementType":"labels.icon","stylers":[{"visibility":"off"}]},{"featureType":"administrative","elementType":"geometry.fill","stylers":[{"color":"#000000"},{"lightness":20}]},{"featureType":"administrative","elementType":"geometry.stroke","stylers":[{"color":"#000000"},{"lightness":17},{"weight":1.2}]},{"featureType":"administrative","elementType":"labels","stylers":[{"visibility":"off"}]},{"featureType":"administrative.country","elementType":"all","stylers":[{"visibility":"simplified"}]},{"featureType":"administrative.country","elementType":"geometry","stylers":[{"visibility":"simplified"}]},{"featureType":"administrative.country","elementType":"labels.text","stylers":[{"visibility":"simplified"}]},{"featureType":"administrative.province","elementType":"all","stylers":[{"visibility":"off"}]},{"featureType":"administrative.locality","elementType":"all","stylers":[{"visibility":"simplified"},{"saturation":"-100"},{"lightness":"30"}]},{"featureType":"administrative.neighborhood","elementType":"all","stylers":[{"visibility":"off"}]},{"featureType":"administrative.land_parcel","elementType":"all","stylers":[{"visibility":"off"}]},{"featureType":"landscape","elementType":"all","stylers":[{"visibility":"simplified"},{"gamma":"0.00"},{"lightness":"74"}]},{"featureType":"landscape","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":20}]},{"featureType":"landscape.man_made","elementType":"all","stylers":[{"lightness":"3"}]},{"featureType":"poi","elementType":"all","stylers":[{"visibility":"off"}]},{"featureType":"poi","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":21}]},{"featureType":"road","elementType":"geometry","stylers":[{"visibility":"simplified"}]},{"featureType":"road.highway","elementType":"geometry.fill","stylers":[{"color":"#000000"},{"lightness":17}]},{"featureType":"road.highway","elementType":"geometry.stroke","stylers":[{"color":"#000000"},{"lightness":29},{"weight":0.2}]},{"featureType":"road.arterial","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":18}]},{"featureType":"road.local","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":16}]},{"featureType":"transit","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":19}]},{"featureType":"water","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":17}]}] : undefined;
   public options: google.maps.MapOptions = {
     center: {lat: 22.3193, lng: 114.1694},
@@ -65,11 +92,38 @@ export class MapComponent {
     black: 'https://res.cloudinary.com/dmhcgihwc/image/upload/v1650385555/samples/black-rect_taftow.png'
   };
 
+  private mapMarkers: Record<string, MapMarker> = {};
+
   constructor(private http: HttpClient) {
     this.records
       .subscribe((records) => {
         this.markers = this.groupMarkersWithSamePosition(records);
       });
+    this.favoriteAdsIds = JSON.parse(localStorage.getItem('favoriteAdsIds') || '[]');
+    this.favoriteAds = JSON.parse(localStorage.getItem('favoriteAds') || '{}');
+  }
+
+  public addMapMarker(marker: any, mapMarker: MapMarker): void {
+    if (marker.type === MarkerType.Ad) {
+      this.mapMarkers[marker.data.id] = mapMarker;
+    } else {
+      for (const singleMarker of marker.data) {
+        this.mapMarkers[singleMarker.id] = mapMarker;
+      }
+    }
+  }
+
+  public toggleFavorite(record: any): void {
+    if (this.isAdFavorite(record.id)) {
+      console.log('sohuld be removing: ' + record.id);
+      this.removeFavoriteAd.emit(record.id);
+    } else {
+      this.addFavoriteAd.emit(record);
+    }
+  }
+
+  public isAdFavorite(id: string): boolean {
+    return !!this.favoriteAdsIds.find((e) => e === id);
   }
 
   private groupMarkersWithSamePosition(records: any[]) {
@@ -142,7 +196,6 @@ export class MapComponent {
   }
 
   public openUrl(url: string) {
-    console.log('opening: ' + url);
     window?.open(url, '_blank')?.focus();
   }
 
