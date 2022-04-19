@@ -90,7 +90,7 @@ export class MonitoringPage {
     while (nbOfProcessedAds != 0) {
       this.stateMessage = 'Removing unavailable records...';
       const request$ = this.http
-        .get<any[]>(`${environment.apiUrl}/remove-unavailable-ads`)
+        .get<any[]>(`${environment.apiUrl}/remove-unavailable-ads?location=${this.location}`)
         .pipe(catchError((err) => of(err.error.message)));
       const result = await lastValueFrom(request$);
       if (Array.isArray(result)) {
