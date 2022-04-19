@@ -56,11 +56,11 @@
           </div>
           <div class="flex items-center" tooltip="Transit time from this place to Three Pacific Place" placement="top" [showDelay]="250">
             <fa-icon [icon]="faTrainSubway" size="sm"></fa-icon>
-            <b class="ml-3">{{timeToString(currentMarker.workTravelTime)}}</b>
+            <b class="ml-3">{{timeToString(currentMarker.data.workTravelTime)}}</b>
           </div>
         </div>
         <div class="mb-3">
-          {{diffDate(currentMarker)}} days ago
+          {{diffDate(currentMarker)}}
         </div>
         <a
           [href]="currentMarker.data.detailUrl"

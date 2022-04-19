@@ -147,7 +147,7 @@ export class MapComponent {
   }
 
   public timeToString(time?: number) {
-    return !time ? '' : `${Math.round(time / 60)}min`;
+    return !time ? 'No data' : `${Math.round(time / 60)}min`;
   }
 
   public findMarkerIcon(marker: any) {
@@ -184,11 +184,15 @@ export class MapComponent {
     return markerDateTimestamp > threeDaysAgoTimestamp;
   }
 
-  public diffDate(marker: any): number {
-    const todayTimestamp: number = (new Date()).getTime();
-    const markerDateTimestamp: number = new Date(marker.data.createdDate).getTime();
-    const diffTimestamp = todayTimestamp - markerDateTimestamp;
-    return Math.ceil(diffTimestamp/86400000);
+  public diffDate(marker: any): string {
+    if (marker.type === MarkerType.Ad) {
+      const todayTimestamp: number = (new Date()).getTime();
+      const markerDateTimestamp: number = new Date(marker.data.createdDate).getTime();
+      const diffTimestamp = todayTimestamp - markerDateTimestamp;
+      return Math.ceil(diffTimestamp/86400000) + ' days ago';
+    }
+
+    return '';
   }
 
 }
