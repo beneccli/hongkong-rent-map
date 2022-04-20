@@ -3,7 +3,7 @@ import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core
 import { MapInfoWindow, MapMarker } from '@angular/google-maps';
 import { environment } from '@env/environment';
 import { faHashtag, faHeart, faHeartCircleCheck, faHeartCrack, faRulerCombined, faTrainSubway, faUpRightFromSquare } from '@fortawesome/free-solid-svg-icons';
-import { BehaviorSubject, catchError, of } from 'rxjs';
+import { BehaviorSubject, catchError, combineLatest, debounceTime, delay, filter, of, Subject } from 'rxjs';
 
 enum MarkerType {
   Ad,
@@ -16,6 +16,11 @@ interface IMarker {
   data: any;
 };
 
+interface Criteria {
+  priceRange: string;
+  location: string;
+}
+
 @Component({
   selector: 'app-map',
   templateUrl: './map.component.html',
@@ -24,29 +29,14 @@ export class MapComponent {
   @ViewChild(MapInfoWindow) infoWindow?: MapInfoWindow;
   @Input() set priceRange(value: string) {
     this._priceRange = value;
-    this.retrieveRecords();
+    this.pushCriteria();
   }
   @Input() set location(value: string) {
     this._location = value;
-    this.retrieveRecords();
+    this.pushCriteria();
   }
   @Input() set showAd(record: any) {
-    if (record) {
-      setTimeout(() => {
-        const marker = this.markers.find((marker) => {
-          if (marker.type === MarkerType.Ad) {
-            return marker.data.id === record.id;
-          } else {
-            return !!marker.data.find((ad: any) => ad.id === record.id);
-          }
-        });
-
-        if (marker) {
-          this.currentMarker = marker;
-          this.infoWindow?.open(this.mapMarkers[record.id]);
-        }
-      }, 1000);
-    }
+    record && this.newShowRecord$.next(record);
   }
   @Input() favoriteAdsIds: string[] = [];
   @Input() favoriteAds: Record<string, any> = {};
@@ -65,17 +55,18 @@ export class MapComponent {
   faHeartCircleCheck = faHeartCircleCheck;
   MarkerType = MarkerType;
 
+  private criteria$: Subject<Criteria>  = new Subject();
+  private newShowRecord$: Subject<any>  = new Subject();
+  private requestComplete$: Subject<boolean>  = new Subject();
   private _priceRange = '15000-20000';
   private _location = 'hk';
 
   public stateMessage = '';
-  public records = new BehaviorSubject<any>([]);
+  public records$ = new BehaviorSubject<any>([]);
   public markerOptions: google.maps.MarkerOptions = {draggable: false, clickable: true};
   public markerPositions: google.maps.LatLngLiteral[] = [];
   public markers: IMarker[] = [];
   public currentMarker: any;
-  // private favoriteAdsIds: string[] = [];
-  // private favoriteAds: Record<string, any> = {};
   private mapStyle: any = window?.matchMedia('(prefers-color-scheme: dark)').matches ? [{"featureType":"all","elementType":"labels.text.fill","stylers":[{"saturation":36},{"color":"#000000"},{"lightness":40}]},{"featureType":"all","elementType":"labels.text.stroke","stylers":[{"visibility":"on"},{"color":"#000000"},{"lightness":16}]},{"featureType":"all","elementType":"labels.icon","stylers":[{"visibility":"off"}]},{"featureType":"administrative","elementType":"geometry.fill","stylers":[{"color":"#000000"},{"lightness":20}]},{"featureType":"administrative","elementType":"geometry.stroke","stylers":[{"color":"#000000"},{"lightness":17},{"weight":1.2}]},{"featureType":"administrative","elementType":"labels","stylers":[{"visibility":"off"}]},{"featureType":"administrative.country","elementType":"all","stylers":[{"visibility":"simplified"}]},{"featureType":"administrative.country","elementType":"geometry","stylers":[{"visibility":"simplified"}]},{"featureType":"administrative.country","elementType":"labels.text","stylers":[{"visibility":"simplified"}]},{"featureType":"administrative.province","elementType":"all","stylers":[{"visibility":"off"}]},{"featureType":"administrative.locality","elementType":"all","stylers":[{"visibility":"simplified"},{"saturation":"-100"},{"lightness":"30"}]},{"featureType":"administrative.neighborhood","elementType":"all","stylers":[{"visibility":"off"}]},{"featureType":"administrative.land_parcel","elementType":"all","stylers":[{"visibility":"off"}]},{"featureType":"landscape","elementType":"all","stylers":[{"visibility":"simplified"},{"gamma":"0.00"},{"lightness":"74"}]},{"featureType":"landscape","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":20}]},{"featureType":"landscape.man_made","elementType":"all","stylers":[{"lightness":"3"}]},{"featureType":"poi","elementType":"all","stylers":[{"visibility":"off"}]},{"featureType":"poi","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":21}]},{"featureType":"road","elementType":"geometry","stylers":[{"visibility":"simplified"}]},{"featureType":"road.highway","elementType":"geometry.fill","stylers":[{"color":"#000000"},{"lightness":17}]},{"featureType":"road.highway","elementType":"geometry.stroke","stylers":[{"color":"#000000"},{"lightness":29},{"weight":0.2}]},{"featureType":"road.arterial","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":18}]},{"featureType":"road.local","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":16}]},{"featureType":"transit","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":19}]},{"featureType":"water","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":17}]}] : undefined;
   public options: google.maps.MapOptions = {
     center: {lat: 22.3193, lng: 114.1694},
@@ -95,12 +86,47 @@ export class MapComponent {
   private mapMarkers: Record<string, MapMarker> = {};
 
   constructor(private http: HttpClient) {
-    this.records
+    this.records$
       .subscribe((records) => {
         this.markers = this.groupMarkersWithSamePosition(records);
       });
     this.favoriteAdsIds = JSON.parse(localStorage.getItem('favoriteAdsIds') || '[]');
     this.favoriteAds = JSON.parse(localStorage.getItem('favoriteAds') || '{}');
+    this.criteria$
+      .pipe(debounceTime(200))
+      .subscribe((criteria: Criteria) => {
+        this.retrieveRecords(criteria.location, criteria.priceRange);
+      });
+
+    combineLatest([
+      this.requestComplete$,
+      this.newShowRecord$
+    ])
+      .pipe(
+        delay(500),
+        filter(([ requestComplete, ]) => requestComplete),
+      )
+      .subscribe(([ , record ]) => {
+        const marker = this.markers.find((marker) => {
+          if (marker.type === MarkerType.Ad) {
+            return marker.data.id === record.id;
+          } else {
+            return !!marker.data.find((ad: any) => ad.id === record.id);
+          }
+        });
+
+        if (marker) {
+          this.currentMarker = marker;
+          this.infoWindow?.open(this.mapMarkers[record.id]);
+        }
+      });
+  }
+
+  private pushCriteria(): void {
+    this.criteria$.next({
+      location: this._location,
+      priceRange: this._priceRange
+    });
   }
 
   public addMapMarker(marker: any, mapMarker: MapMarker): void {
@@ -176,6 +202,7 @@ export class MapComponent {
   public retrieveRecords(location?: string, priceRange?: string) {
     this.actionAdd.emit();
     this.stateMessage = 'Retrieving records...';
+    this.requestComplete$.next(false);
     this.http
       .get<any[]>(
         environment.apiUrl +
@@ -187,7 +214,8 @@ export class MapComponent {
       .subscribe((result) => {
         this.actionRemove.emit();
         if (Array.isArray(result)) {
-          this.records.next(result);
+          this.records$.next(result);
+          this.requestComplete$.next(true);
           this.stateMessage = `${result.length} records have been retrieved.`;
         } else {
           this.stateMessage = result;

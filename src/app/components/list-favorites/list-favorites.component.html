@@ -7,7 +7,9 @@
       class="my-2 cursor-pointer hover:underline"
       (click)="showFavorite.emit(favoriteAds[favoriteAdId])"
     >
-      {{favoriteAds[favoriteAdId].data.name}}
+    {{favoriteAds[favoriteAdId].data.location}} -
+    {{favoriteAds[favoriteAdId].data.price}} -
+    {{favoriteAds[favoriteAdId].data.name}}
     </li>
   </ul>
 </div>
