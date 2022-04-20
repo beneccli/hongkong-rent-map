@@ -96,7 +96,7 @@
           *ngFor="let record of currentMarker.data"
         >
           <div class="w-16 mr-3 text-center">{{transformPrice(record.price)}}</div>
-          <div class="w-16 mr-3 text-center">{{record.area.saleableArea}} ft²</div>
+          <div class="w-16 mr-3 text-center whitespace-nowrap">{{record.area.saleableArea}} ft²</div>
           <a
             [href]="record.detailUrl"
             target="_blank"
@@ -105,6 +105,12 @@
             <fa-icon [icon]="faUpRightFromSquare" size="xs" class="mr-1"></fa-icon>
             See more
           </a>
+          <button
+            (click)="toggleFavorite(record)"
+            class="w-12 px-2 py-px ml-2 text-lg text-center text-white rounded bg-red-pomodoro active:bg-red-700"
+          >
+            <fa-icon [icon]="isAdFavorite(record.id) ? faHeartCircleCheck : faHeart" size="xs"></fa-icon>
+          </button>
         </div>
       </ng-container>
 
