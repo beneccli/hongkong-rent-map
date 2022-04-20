@@ -23,4 +23,9 @@ export class ListFavoritesComponent {
     return !time ? 'No data' : `${Math.round(time / 60)}min`;
   }
 
+  public transformPrice(price: number): string {
+    const text = price?.toString();
+    return isNaN(+text) ? text : (parseInt(text)/1000).toString().substring(0,4) + 'K';
+  }
+
 }
