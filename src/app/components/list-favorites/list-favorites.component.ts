@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { faTrainSubway } from '@fortawesome/free-solid-svg-icons';
+import { faDollarSign, faLocationDot, faRulerCombined, faTrainSubway } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-list-favorites',
@@ -14,6 +14,13 @@ export class ListFavoritesComponent {
   @Output() removeFavoriteAd = new EventEmitter<any>(true);
   @Output() showFavorite = new EventEmitter<any>(true);
 
+  faRulerCombined = faRulerCombined;
   faTrainSubway = faTrainSubway;
+  faLocationDot = faLocationDot;
+  faDollar = faDollarSign;
+
+  public timeToString(time?: number) {
+    return !time ? 'No data' : `${Math.round(time / 60)}min`;
+  }
 
 }

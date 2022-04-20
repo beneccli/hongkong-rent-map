@@ -1,15 +1,40 @@
 
 <div>
-  <h3 class="mt-12 mb-6 text-2xl">Favorites ads</h3>
-  <ul class="pl-5 list-disc">
-    <li
+  <h3 class="pb-4 mt-12 mb-6 text-2xl border-b-2 border-red-200">Favorites ads</h3>
+  <div class="grid grid-cols-4 gap-2 text-gray-700">
+    <div
       *ngFor="let favoriteAdId of favoriteAdsIds"
-      class="my-2 cursor-pointer hover:underline"
       (click)="showFavorite.emit(favoriteAds[favoriteAdId])"
+      class="p-2 bg-white rounded-lg cursor-pointer hover:bg-opacity-90"
     >
-    {{favoriteAds[favoriteAdId].data.location}} -
-    {{favoriteAds[favoriteAdId].data.price}} -
-    {{favoriteAds[favoriteAdId].data.name}}
-    </li>
-  </ul>
+      <img
+        [src]="favoriteAds[favoriteAdId].data.picture.thumbnail"
+        class="object-cover w-full h-32 rounded"
+      />
+      <div class="py-3 truncate">{{favoriteAds[favoriteAdId].data.name}}</div>
+
+      <div class="flex items-center justify-center py-2 text-lg dark:text-gray-800">
+        <div class="flex items-center justify-center w-1/2 mr-4" tooltip="Saleable area" placement="top" [showDelay]="250">
+          <fa-icon [icon]="faRulerCombined" size="sm"></fa-icon>
+          <b class="ml-3">{{favoriteAds[favoriteAdId].data.area.saleableArea}} ft²</b>
+        </div>
+        <div class="flex items-center justify-center w-1/2" tooltip="Transit time from this place to Three Pacific Place" placement="top" [showDelay]="250">
+          <fa-icon [icon]="faTrainSubway" size="sm"></fa-icon>
+          <b class="ml-3">{{timeToString(favoriteAds[favoriteAdId].data.workTravelTime)}}</b>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-center py-2 text-lg dark:text-gray-800">
+        <div class="flex items-center justify-center w-1/2 mr-4">
+          <fa-icon [icon]="faLocationDot" size="sm"></fa-icon>
+          <b class="ml-3">{{favoriteAds[favoriteAdId].data.location}}</b>
+        </div>
+        <div class="flex items-center justify-center w-1/2">
+          <fa-icon [icon]="faDollar" size="sm"></fa-icon>
+          <b class="ml-3">{{timeToString(favoriteAds[favoriteAdId].data.price)}}</b>
+        </div>
+      </div>
+
+    </div>
+  </div>
 </div>
