@@ -200,7 +200,7 @@ const updateRecords = (base: any, location: string, recordIds: any[], elements: 
 
 const extractRentList = async (opt: any) => {
   let extractedResult: any[] = [];
-  for (let currentPage = 0 ; currentPage < opt.maxPage ; currentPage++) {
+  for (let currentPage = opt.offset*opt.maxPage ; currentPage < (opt.offset+1)*opt.maxPage ; currentPage++) {
     extractedResult = [
       ...extractedResult,
       ...(await extractResult(opt.location, currentPage, opt.rentprice_low, opt.rentprice_high))
@@ -236,10 +236,11 @@ const upsertRentList = (location: string, extractedRentList: any[]) => {
   });
 }
 
-const refreshRentList = async (location: string, priceLow: string, priceHigh: string, maxPage: number): Promise<any[]> => {
+const refreshRentList = async (location: string, priceLow: string, priceHigh: string, maxPage: number, offset?: number): Promise<any[]> => {
   maxPage = maxPage || 5;
+  offset = offset || 0;
   const extractedResult: any[] =
-    await extractRentList({ location, maxPage, priceLow, priceHigh});
+    await extractRentList({ location, maxPage, priceLow, priceHigh, offset });
   upsertRentList(location, extractedResult);
   return extractedResult;
 }

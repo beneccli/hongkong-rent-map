@@ -9704,7 +9704,8 @@ var airtable = __toModule(require_airtable());
 var getBaseIdByLocation = {
   hk: "appSt8paRVfriWVnj",
   kw: "appsE1GKiQJUORSv8",
-  nt: "appj20SpW4ehf51O0"
+  nt: "appj20SpW4ehf51O0",
+  islands: "appIXMLrZf74TzQqF"
 };
 
 // netlify/utils/get-step.ts

@@ -15,6 +15,7 @@
         <option value="hk" selected>Hong Kong</option>
         <option value="kw">Kowloon</option>
         <option value="nt">New Territories</option>
+        <option value="islands">Outlying Islands</option>
       </select>
       <select
         [(ngModel)]="priceRange"
@@ -29,40 +30,75 @@
   </div>
   <div>
     <h1 class="my-6 text-2xl">Monitoring</h1>
-    <div class="flex justify-between">
-      <button
-        (click)="refreshRentList()"
-        class="mr-3 bg-white bg-opacity-25 border-none rounded-lg active:bg-opacity-10 focus:ring-2 focus:ring-red-200 form-input"
-      >
-        Refresh rent list
-      </button>
+    <div class="grid grid-cols-3">
+      <div class="flex mb-3 mr-3">
+        <input
+          class="w-20 bg-white bg-opacity-25 border-none rounded-l-lg active:bg-opacity-10 focus:ring-2 focus:ring-red-200 form-input"
+          type="number"
+          [(ngModel)]="offset"
+        />
+        <button
+          (click)="refreshRentList()"
+          class="flex-1 bg-white bg-opacity-25 border-none rounded-r-lg active:bg-opacity-10 focus:ring-2 focus:ring-red-200 form-input"
+        >
+          Refresh rent list
+        </button>
+      </div>
       <button
         (click)="updateAddresses()"
-        class="mr-3 bg-white bg-opacity-25 border-none rounded-lg active:bg-opacity-10 focus:ring-2 focus:ring-red-200 form-input"
+        class="mb-3 mr-3 bg-white bg-opacity-25 border-none rounded-lg active:bg-opacity-10 focus:ring-2 focus:ring-red-200 form-input"
       >
         Update addresses
       </button>
       <button
         (click)="updateCoordinates()"
-        class="mr-3 bg-white bg-opacity-25 border-none rounded-lg active:bg-opacity-10 focus:ring-2 focus:ring-red-200 form-input"
+        class="mb-3 bg-white bg-opacity-25 border-none rounded-lg active:bg-opacity-10 focus:ring-2 focus:ring-red-200 form-input"
       >
         Update coordinates
       </button>
       <button
         (click)="updateTravelTime()"
-        class="mr-3 bg-white bg-opacity-25 border-none rounded-lg active:bg-opacity-10 focus:ring-2 focus:ring-red-200 form-input"
+        class="mb-3 mr-3 bg-white bg-opacity-25 border-none rounded-lg active:bg-opacity-10 focus:ring-2 focus:ring-red-200 form-input"
       >
         Update transit time
       </button>
       <button
         (click)="removeUnavailableAds()"
-        class="bg-white bg-opacity-25 border-none rounded-lg active:bg-opacity-10 focus:ring-2 focus:ring-red-200 form-input"
+        class="mb-3 mr-3 bg-white bg-opacity-25 border-none rounded-lg active:bg-opacity-10 focus:ring-2 focus:ring-red-200 form-input"
       >
         Remove unavailable ads
+      </button>
+      <button
+        (click)="clearLogs()"
+        class="mb-3 bg-white bg-opacity-25 border-none rounded-lg active:bg-opacity-10 focus:ring-2 focus:ring-red-200 form-input"
+      >
+        Clear logs
+      </button>
+      <button
+        (click)="startFullRefresh()"
+        class="col-span-3 mb-3 bg-white bg-opacity-25 border-none rounded-lg active:bg-opacity-10 focus:ring-2 focus:ring-red-200 form-input"
+      >
+        Start full refresh
       </button>
     </div>
     <p class="px-6 py-3 mt-6 bg-red-700 bg-opacity-25 rounded-lg">
       {{stateMessage || 'No message available.'}}
     </p>
+    <div
+      #scrollMe
+      [scrollTop]="scrollMe.scrollHeight"
+      class="px-6 py-3 mt-6 overflow-y-auto bg-red-700 bg-opacity-25 rounded-lg max-h-[32rem]"
+      [class.hidden]="!listMessages.length"
+    >
+      <ul>
+        <li *ngFor="let message of listMessages">
+          <span class="mr-3 opacity-50 select-none">{{formatDate(message.datetime, 'yyyy/MM/dd HH:mm:ss')}}</span>
+          <span
+            [class.font-bold]="message.type === MessageLogType.Primary"
+            [class.text-orange-300]="message.type === MessageLogType.Primary"
+          >{{message.text}}</span>
+        </li>
+      </ul>
+    </div>
   </div>
 </div>
