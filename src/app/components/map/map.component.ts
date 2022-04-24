@@ -19,6 +19,7 @@ interface IMarker {
 interface Criteria {
   priceRange: string;
   location: string;
+  onlyRecent: boolean;
 }
 
 @Component({
@@ -33,6 +34,10 @@ export class MapComponent {
   }
   @Input() set location(value: string) {
     this._location = value;
+    this.pushCriteria();
+  }
+  @Input() set onlyRecent(value: boolean) {
+    this._onlyRecent = value;
     this.pushCriteria();
   }
   @Input() set showAd(record: any) {
@@ -60,6 +65,7 @@ export class MapComponent {
   private requestComplete$: Subject<boolean>  = new Subject();
   private _priceRange = '15000-20000';
   private _location = 'hk';
+  private _onlyRecent = false;
 
   public stateMessage = '';
   public records$ = new BehaviorSubject<any>([]);
@@ -95,7 +101,7 @@ export class MapComponent {
     this.criteria$
       .pipe(debounceTime(200))
       .subscribe((criteria: Criteria) => {
-        this.retrieveRecords(criteria.location, criteria.priceRange);
+        this.retrieveRecords(criteria.location, criteria.priceRange, criteria.onlyRecent);
       });
 
     combineLatest([
@@ -125,7 +131,8 @@ export class MapComponent {
   private pushCriteria(): void {
     this.criteria$.next({
       location: this._location,
-      priceRange: this._priceRange
+      priceRange: this._priceRange,
+      onlyRecent: this._onlyRecent,
     });
   }
 
@@ -199,7 +206,7 @@ export class MapComponent {
     return isNaN(+text) ? text : (parseInt(text)/1000).toString().substring(0,4) + 'K';
   }
 
-  public retrieveRecords(location?: string, priceRange?: string) {
+  public retrieveRecords(location?: string, priceRange?: string, onlyRecent?: boolean) {
     this.actionAdd.emit();
     this.stateMessage = 'Retrieving records...';
     this.requestComplete$.next(false);
@@ -208,7 +215,8 @@ export class MapComponent {
         environment.apiUrl +
         '/get-rent-list' +
         '?location=' + (location || this._location) +
-        '&priceRange=' + (priceRange || this._priceRange)
+        '&priceRange=' + (priceRange || this._priceRange) +
+        '&recent=' + (onlyRecent || this._onlyRecent)
       )
       .pipe(catchError((err) => of(err.message)))
       .subscribe((result) => {

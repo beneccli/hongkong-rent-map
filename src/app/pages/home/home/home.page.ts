@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { ThemeList } from '@core/services/theme';
 import { ROUTER_UTILS } from '@core/utils/router.utils';
+import { faSquare, faSquareCheck } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   templateUrl: './home.page.html',
@@ -17,6 +18,10 @@ export class HomePage {
 
   public isLoading = false;
   private nbProcessingActions = 0;
+  public onlyRecent = false;
+
+  faSquare = faSquare;
+  faSquareCheck = faSquareCheck;
 
   constructor() {
     this.favoriteAdsIds = JSON.parse(localStorage.getItem('favoriteAdsIds') || '[]');

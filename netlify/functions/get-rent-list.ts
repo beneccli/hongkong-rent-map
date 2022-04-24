@@ -2,10 +2,11 @@ import { Handler } from "@netlify/functions";
 import * as airtable from 'airtable';
 import { getBaseIdByLocation } from "netlify/utils/get-base-by-location";
 
-const getRecords = async (location: string, priceLow: string, priceHigh: string): Promise<any[]> => {
+const getRecords = async (location: string, priceLow: string, priceHigh: string, onlyRecent: boolean): Promise<any[]> => {
   const apiKey = 'key7n6E71OR94Ur7a';
   airtable.configure({ apiKey });
   const base = airtable.base(getBaseIdByLocation[location]);
+  const dateCriteria = onlyRecent ? ", IS_AFTER({createdDate}, DATEADD(TODAY(), -2, 'days'))" : '';
 
   return new Promise(function(resolve, reject) {
     let getRecords: any[] = [];
@@ -19,6 +20,7 @@ const getRecords = async (location: string, priceLow: string, priceHigh: string)
           {address} != 'KO',
           {coordinates} != '',
           {coordinates} != 'KO'
+          ${dateCriteria}
         )`
     })
     .eachPage((records: any[], fetchNextPage: () => void) => {
@@ -47,10 +49,11 @@ const recordToObject = (record: any) => {
 const handler: Handler = async (event, context) => {
   const location: string = event?.queryStringParameters?.['location'] || 'hk';
   const priceRange: string = event?.queryStringParameters?.['priceRange'] || '15000-20000';
+  const onlyRecent: boolean = event?.queryStringParameters?.['recent'] === 'true';
   const priceLow = priceRange.split('-')[0];
   const priceHigh = priceRange.split('-')[1];
 
-  const records: any[] = await getRecords(location, priceLow, priceHigh);
+  const records: any[] = await getRecords(location, priceLow, priceHigh, onlyRecent);
   const rentList: any[] = records.map((e) => recordToObject(e));
 
   return {
