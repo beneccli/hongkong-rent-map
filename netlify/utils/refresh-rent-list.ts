@@ -64,7 +64,7 @@ const retrievePicture = (htmlElement: any) => {
   const resultNb = result.nextElementSibling;
   return {
     thumbnail: result.attributes.src,
-    total: parseInt(resultNb.querySelector('.ui.label')?.rawText.trim() || 1)
+    total: parseInt(resultNb?.querySelector('.ui.label')?.rawText.trim() || 1)
   };
 }
 
@@ -125,7 +125,7 @@ const extractResult = async (location: string, currentPage: number, rentprice_lo
   // const totalResult: number = data.data.results.resultData.ListingPaginator.count;
   // const totalPage: number = data.data.results.resultData.ListingPaginator.total_page;
 
-  const extractedResult = results.map((res) => extractData(res));
+  const extractedResult = results.filter((res) => res).map((res) => extractData(res));
 
   return extractedResult;
 }
